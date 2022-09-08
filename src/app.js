@@ -30,13 +30,13 @@ const explorerNames = [
 // main startup
 async function main () {
   const api = await apiPromise;
-  autoupdate = api.query.proxy.proxies.entries(async (nodes) => {
+  const autoupdate = api.query.proxy.proxies.entries(async (nodes) => {
     nodes.sort((a, b) => {
       return a[0].toHuman[0] - b[0].toHuman[0];
     });
     await draw(nodes);
   });
-  autoannoncements = api.query.proxy.announcements.entries(async (announcements) => {
+  const autoannoncements = api.query.proxy.announcements.entries(async (announcements) => {
     console.log(announcements);
     await draw();
   });
@@ -101,12 +101,12 @@ cy.on("select", "node", function(evt) {
 });
 
 function sidebar_display(node, related){
-  sidebar = document.getElementById("sidebar");
+  const sidebar = document.getElementById("sidebar");
   sidebar.textContent = "";
   // populate sidebar with node data
-  accountElement = document.createElement("account");
-  relatedElement = document.createElement("related");
-  lastElement = document.createElement("info");
+  const accountElement = document.createElement("account");
+  const relatedElement = document.createElement("related");
+  const lastElement = document.createElement("info");
   
   sidebar.appendChild(accountElement);
   sidebar.appendChild(relatedElement);
@@ -124,7 +124,7 @@ function sidebar_display(node, related){
     // each object should either represent an account/node OR
     // an "additional" identity value - we determine which we 
     // are looking at by checking the first subelement.
-    firstChild = element.firstElementChild
+    const firstChild = element.firstElementChild
     if (firstChild.tagName == "ID"){
       element.style.width = "inherit";
       const nodeAddress = firstChild.innerText;
@@ -137,18 +137,18 @@ function sidebar_display(node, related){
           position: clickedNode.position()
         });
         const existingLinks = document.getElementById("links");
-        linksDiv = existingLinks?existingLinks:document.createElement("div");
+        const linksDiv = existingLinks?existingLinks:document.createElement("div");
         linksDiv.innerHTML = "";
         linksDiv.id = "links";
         lastElement.appendChild(linksDiv);
-        for (index in explorers){
-          explorerLink = document.createElement("a");
+        for (const index in explorers){
+          const explorerLink = document.createElement("a");
           explorerLink.href = explorers[index] + nodeAddress;
           explorerLink.innerText = explorerNames[index];
           linksDiv.appendChild(explorerLink);
         }
       })
-      identityElement = element.getElementsByTagName("identity").item(0);
+      const identityElement = element.getElementsByTagName("identity").item(0);
 
     }
     if (firstChild.tagName == "OBJECT"){
@@ -170,7 +170,7 @@ function objectToDomElement(parent, object, objectTag=false){
   var documentObject = document.createElement(objectTag?objectTag:typeof object);
   if(object instanceof Object){
     if(object instanceof Array){
-      for( element of object ){
+      for(const element of object ){
         documentObject.append(objectToDomElement(documentObject, element));
       }
     } else {
@@ -179,7 +179,7 @@ function objectToDomElement(parent, object, objectTag=false){
       }
     }
   } else {
-    objectText = object?object.toString():"";
+    const objectText = object?object.toString():"";
     documentObject.innerText = objectText;
   }
   parent.append(documentObject);
@@ -190,13 +190,13 @@ function objectToDomElement(parent, object, objectTag=false){
 //------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 function onCirc(seedAngle=null) {
-  var angle = seedAngle*Math.PI?seedAngle:Math.random()*Math.PI*2;
+  const angle = seedAngle*Math.PI?seedAngle:Math.random()*Math.PI*2;
   return [Math.cos(angle), Math.sin(angle)]; //The maximum is exclusive and the minimum is inclusive
 }
 
 function procColor(seed) {
   return "#" +
-    ("00000" + Math.floor(onCirc(seedAngle=seed)[0] * Math.pow(16, 6))
+    ("00000" + Math.floor(onCirc(seed)[0] * Math.pow(16, 6))
       .toString(16))
       .slice(-6);
 }
@@ -217,7 +217,7 @@ async function draw(nodes, nodes_remove=[]){
     if(cy.$id(node_point).length == 0){
       // I want node positions to be mostly deterministic so that people can
       // look in roughly the same spot for the same thing across reloads
-      [newX, newY] = onCirc(seedAngle=idRequests.length);
+      [newX, newY] = onCirc(idRequests.length);
       cy.add(
         {
           group: "nodes",
@@ -235,7 +235,7 @@ async function draw(nodes, nodes_remove=[]){
     };
     for ([index, delegate] of delegates.entries()) {
       if(cy.$id(delegate.delegate).length == 0){
-        [newX, newY] = onCirc(seedAngle=index);
+        [newX, newY] = onCirc(index);
         cy.add(
           {
             group: "nodes",
@@ -251,7 +251,7 @@ async function draw(nodes, nodes_remove=[]){
         );
         idRequests.push(delegate.delegate);
       };
-      edgeId = delegate.delegate+node_point+delegate.proxyType;
+      const edgeId = delegate.delegate+node_point+delegate.proxyType;
       if(cy.$id(edgeId).length == 0)cy.add({
         group: "edges",
         data: {
@@ -277,8 +277,9 @@ async function draw(nodes, nodes_remove=[]){
     return output;
   }).then(async (results) => {
     for (const [index, identity, superIdResponse] of results) {
+      var nametext;
       if(identity.toHuman()){
-        identityJson = identity.toHuman();
+        const identityJson = identity.toHuman();
         nametext = 
           reg.test(identityJson["info"]["display"]["Raw"])?
           hexToString(identityJson["info"]["display"]["Raw"]):
@@ -286,7 +287,7 @@ async function draw(nodes, nodes_remove=[]){
         cy.$id(idRequests[index]).data("label", nametext);
         cy.$id(idRequests[index]).data("identity", identityJson);
       } else {
-        superId = superIdResponse.toHuman();
+        const superId = superIdResponse.toHuman();
         if(superId){
           var parsedSuperId = 
             reg.test(superId[1]["Raw"])?
@@ -294,8 +295,8 @@ async function draw(nodes, nodes_remove=[]){
             superId[1]["Raw"];
           if(!cy.$id(superId[0]).length == 0){
             nametext = cy.$id(superId[0]).data("label")+"/"+parsedSuperId;
-            superEdgeId = idRequests[index]+superId[0]+"superidentity";
-            existingNode = cy.$id(superEdgeId);
+            const superEdgeId = idRequests[index]+superId[0]+"superidentity";
+            const existingNode = cy.$id(superEdgeId);
             if(existingNode.length == 0)cy.add({
               group: "edges",
               data: {
@@ -308,7 +309,7 @@ async function draw(nodes, nodes_remove=[]){
             });
           } else {
             nametext = idRequests[index];
-            [newX, newY] = onCirc(seedAngle=index);
+            [newX, newY] = onCirc(index);
             cy.add([
               {
                 group: "nodes",
@@ -328,8 +329,8 @@ async function draw(nodes, nodes_remove=[]){
             pendingIdRequests.push(superId[0]);
             pendingIdRequests.push(idRequests[index]);
             // add edge to superID
-            superEdgeId = idRequests[index]+superId[0]+"superidentity";
-            existingNode = cy.$id(superEdgeId);
+            const superEdgeId = idRequests[index]+superId[0]+"superidentity";
+            const existingNode = cy.$id(superEdgeId);
             if(existingNode.length == 0)cy.add({
               group: "edges",
               data: {
