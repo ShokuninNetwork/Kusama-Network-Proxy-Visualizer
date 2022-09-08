@@ -217,7 +217,7 @@ async function draw(nodes, nodes_remove=[]){
     if(cy.$id(node_point).length == 0){
       // I want node positions to be mostly deterministic so that people can
       // look in roughly the same spot for the same thing across reloads
-      [newX, newY] = onCirc(idRequests.length);
+      const [newX, newY] = onCirc(idRequests.length);
       cy.add(
         {
           group: "nodes",
@@ -235,7 +235,7 @@ async function draw(nodes, nodes_remove=[]){
     };
     for ([index, delegate] of delegates.entries()) {
       if(cy.$id(delegate.delegate).length == 0){
-        [newX, newY] = onCirc(index);
+        const [newX, newY] = onCirc(index);
         cy.add(
           {
             group: "nodes",
@@ -309,7 +309,7 @@ async function draw(nodes, nodes_remove=[]){
             });
           } else {
             nametext = idRequests[index];
-            [newX, newY] = onCirc(index);
+            const [newX, newY] = onCirc(index);
             cy.add([
               {
                 group: "nodes",
