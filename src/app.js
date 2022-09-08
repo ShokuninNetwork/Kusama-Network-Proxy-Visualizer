@@ -29,7 +29,7 @@ const explorerNames = [
 
 // main startup
 async function main () {
-  api = await apiPromise;
+  const api = await apiPromise;
   autoupdate = api.query.proxy.proxies.entries(async (nodes) => {
     nodes.sort((a, b) => {
       return a[0].toHuman[0] - b[0].toHuman[0];
