@@ -174,7 +174,7 @@ function objectToDomElement(parent, object, objectTag=false){
         documentObject.append(objectToDomElement(documentObject, element));
       }
     } else {
-      for( [key, element] of Object.entries(object)){
+      for(const [key, element] of Object.entries(object)){
         documentObject.append(objectToDomElement(documentObject, element, key));
       }
     }
@@ -233,7 +233,7 @@ async function draw(nodes, nodes_remove=[]){
       );
       idRequests.push(node_point);
     };
-    for ([index, delegate] of delegates.entries()) {
+    for (const [index, delegate] of delegates.entries()) {
       if(cy.$id(delegate.delegate).length == 0){
         const [newX, newY] = onCirc(index);
         cy.add(
