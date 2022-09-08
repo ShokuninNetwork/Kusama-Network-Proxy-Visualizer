@@ -391,7 +391,7 @@ function lay() {
     sampleSize: 10,
     nodeSeparation: 100,
     idealEdgeLength: function(edge){ 
-      lengthval =  500 / edge.source().closedNeighborhood().size();
+      const lengthval =  500 / edge.source().closedNeighborhood().size();
       return lengthval;
     },
     edgeElasticity: edge => 0.4,
