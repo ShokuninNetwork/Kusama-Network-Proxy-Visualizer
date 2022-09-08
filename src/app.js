@@ -106,9 +106,7 @@ function sidebar_display(node, related){
   // populate sidebar with node data
   accountElement = document.createElement("account");
   relatedElement = document.createElement("related");
-  lastElement = document.createElement("related");
-  
-  lastElement.style.float = "left";
+  lastElement = document.createElement("info");
   
   sidebar.appendChild(accountElement);
   sidebar.appendChild(relatedElement);
@@ -130,7 +128,6 @@ function sidebar_display(node, related){
     if (firstChild.tagName == "ID"){
       element.style.width = "inherit";
       const nodeAddress = firstChild.innerText;
-      firstChild.innerText = '\n' + firstChild.innerText + '\n';
       firstChild.addEventListener("click", (evt) => {
         cy.$("*").unselect();
         const clickedNode = cy.$id(nodeAddress);

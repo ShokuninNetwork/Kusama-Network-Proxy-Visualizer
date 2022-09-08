@@ -15,8 +15,9 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "parcel watch ./src/homepage.html",
-    "dev": "parcel ./src/homepage.html"
+    "start": "parcel watch ./src/app.html",
+    "dev": "parcel ./src/app.html",
+    "build": "parcel build ./src/app.html"
   },
   "repository": {
     "type": "git",
