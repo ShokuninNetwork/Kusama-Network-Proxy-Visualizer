@@ -9,7 +9,7 @@ let fcose = require('cytoscape-fcose');
 cytoscape.use( fcose ); 
 
 // Construct
-const wsProvider = new WsProvider('wss://kusama-rpc.polkadot.io');
+const wsProvider = new WsProvider('wss://kusama-rpc.polkadot.io'); // TODO, configurability
 const apiPromise = ApiPromise.create({ provider: wsProvider });
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -113,6 +113,26 @@ function sidebar_display(node, related){
   sidebar.appendChild(lastElement);
 
   objectToDomElement(accountElement, node.data());
+  console.log(node.data("id"));
+
+  cy.zoom({
+    level: 0.4,
+    position: node.position()
+  });
+  const existingLinks = document.getElementById("links");
+  const linksDiv = existingLinks?existingLinks:document.createElement("div");
+  linksDiv.innerHTML = "";
+  linksDiv.id = "links";
+  for (const index in explorers){
+    const explorerLink = document.createElement("a");
+    explorerLink.innerText = explorerNames[index];
+    explorerLink.href = explorers[index] + node.data("id");
+    explorerLink.target = "_blank";
+    linksDiv.append(explorerLink);
+  }
+  lastElement.append(linksDiv);
+  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!"+lastElement.innerHTML);
+
   related.map((x) => {
     if(!x.isEdge()){
         objectToDomElement(relatedElement, x.data());
@@ -128,31 +148,19 @@ function sidebar_display(node, related){
     if (firstChild.tagName == "ID"){
       element.style.width = "inherit";
       const nodeAddress = firstChild.innerText;
+      const clickedNode = cy.$id(nodeAddress);
       firstChild.addEventListener("click", (evt) => {
         cy.$("*").unselect();
-        const clickedNode = cy.$id(nodeAddress);
         clickedNode.select();
-        cy.zoom({
-          level: 0.4,
-          position: clickedNode.position()
-        });
-        const existingLinks = document.getElementById("links");
-        const linksDiv = existingLinks?existingLinks:document.createElement("div");
-        linksDiv.innerHTML = "";
-        linksDiv.id = "links";
-        lastElement.appendChild(linksDiv);
-        for (const index in explorers){
-          const explorerLink = document.createElement("a");
-          explorerLink.href = explorers[index] + nodeAddress;
-          explorerLink.innerText = explorerNames[index];
-          linksDiv.appendChild(explorerLink);
-        }
-      })
+      });
       const identityElement = element.getElementsByTagName("identity").item(0);
-
     }
     if (firstChild.tagName == "OBJECT"){
-
+      const key = firstChild.firstElementChild.innerText;
+      const value = element.lastElementChild.firstElementChild.innerText;
+      console.log(key);
+      console.log(value);
+      element.lastElementChild.firstElementChild.data = "https://"+value+".ipfs.dweb.link"; //TODO, configurability
     }
     if (firstChild.tagName == "RAW"){
 
@@ -166,6 +174,10 @@ function sidebar_display(node, related){
 // we can create CSS styles for these individual key/components
 // recursive logic looks redundant but look, it seems to break
 // if I don't do it this way so...
+// some key value pairs (ie, additional identity attributes)
+// are in the form <object><object>key<object/><object>value<object/><object/>
+// this is outside our control because the onchain representation is
+// inconsistent, so we parse and style these items independently. 
 function objectToDomElement(parent, object, objectTag=false){
   var documentObject = document.createElement(objectTag?objectTag:typeof object);
   if(object instanceof Object){
